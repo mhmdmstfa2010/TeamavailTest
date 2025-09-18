@@ -47,23 +47,15 @@ if ! docker info > /dev/null 2>&1; then
   exit 1
 fi
 
-# 2. Docker Compose installed?
-if ! command -v docker-compose &> /dev/null; then
-  echo "❌ docker-compose is not installed."
-  exit 1
-fi
-
-# 3. Validate docker-compose.yml
-if ! docker-compose config -q; then
+# 2. Validate docker-compose.yml with modern docker compose
+if ! docker compose config -q; then
   echo "❌ Invalid docker-compose.yml file."
   exit 1
 fi
-echo "✅ Docker & Docker Compose are installed and running."
+echo "✅ Docker is running and compose file is valid."
 
-echo "==> 7. Build Docker image"
-docker build -t teamavail:local .
 
-echo "==> 8. down any running containers and start services with docker-compose"
+echo "==> 7. down any running containers and start services with docker compose"
 docker compose down
 docker compose up -d --build
 echo "==> Done. open http://localhost:3000 to see the app."

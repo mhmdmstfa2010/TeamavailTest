@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "script.js",
   "scripts": {
+    "format": "prettier --write .",
     "prettier": "prettier --write .",
     "test": "jest",
     "start": "node server.js",
@@ -13,7 +14,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "redis": "^4.6.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

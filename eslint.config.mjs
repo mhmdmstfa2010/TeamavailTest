@@ -11,19 +11,19 @@ export default defineConfig([
     languageOptions: {
       globals: {
         ...globals.node,
-        ...globals.jest
-      }
+        ...globals.jest,
+      },
     },
     rules: {
-      "@typescript-eslint/no-require-imports": "off" // هنا يفضل آخر حاجة
-    }
+      "@typescript-eslint/no-require-imports": "off", // هنا يفضل آخر حاجة
+    },
   },
   {
     files: ["public/**/*.js"],
     languageOptions: {
       globals: {
-        ...globals.browser
-      }
-    }
-  }
+        ...globals.browser,
+      },
+    },
+  },
 ]);
