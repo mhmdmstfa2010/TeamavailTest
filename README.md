@@ -125,27 +125,4 @@ Steps executed locally:
 - Linting: I wrote the ESLint setup from scratch to enable the linting stage.
 - Images: I used Alpine-based Node images and a multi-stage build to keep the final image lightweight.
 
-## Architecture
 
-```mermaid
-flowchart LR
-  User[[User]] -->|HTTP :3000| Browser[Web Browser]
-  Browser -->|Static assets (public/*)| App[Express App (server.js)]
-  Browser -->|API: GET /history, POST /save-history| App
-
-  App -->|SET/GET key: "history"| Redis[(Redis)]
-  App -->|Fallback read/write| File[/Host: ./output/history.json\nContainer: /app/output/history.json/]
-
-  subgraph Compose Stack
-    App
-    Redis
-  end
-
-  classDef dotted stroke-dasharray: 3 3
-  Health1{{/healthz 200}}:::dotted
-  Health2{{redis-cli -a $REDIS_PASSWORD ping == PONG}}:::dotted
-  Health1 -. monitors .-> App
-  Health2 -. monitors .-> Redis
-
-  note over App,File: Bind mount ./output -> /app/output\nPOST writes to Redis and file\nGET prefers Redis, falls back to file
-```
