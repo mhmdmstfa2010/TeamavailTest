@@ -13,6 +13,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY --from=builder /app/ /app
+ENV NODE_ENV=production
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
     && mkdir -p /app/output \

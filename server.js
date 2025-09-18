@@ -22,6 +22,9 @@ redisClient.on("error", (err) => {
 });
 
 async function connectRedis() {
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
   try {
     if (!redisClient.isOpen) {
       await redisClient.connect();
@@ -33,6 +36,11 @@ async function connectRedis() {
 }
 
 connectRedis();
+
+// Lightweight health endpoint for container healthcheck
+app.get("/healthz", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
 // Middleware
 app.use(bodyParser.json());
@@ -46,9 +54,12 @@ app.use("/input", express.static(path.join(__dirname, "input")));
 // Serve output folder (for history.json)
 app.use("/output", express.static(path.join(__dirname, "output")));
 
+// Resolve output directory (configurable for tests)
+const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(__dirname, "output");
+
 // API to get history data
 app.get("/history", async (req, res) => {
-  const historyPath = path.join(__dirname, "output", "history.json");
+  const historyPath = path.join(OUTPUT_DIR, "history.json");
   try {
     // Try Redis first
     await connectRedis();
@@ -83,7 +94,7 @@ app.get("/history", async (req, res) => {
 
 // API to save history data
 app.post("/save-history", async (req, res) => {
-  const historyPath = path.join(__dirname, "output", "history.json");
+  const historyPath = path.join(OUTPUT_DIR, "history.json");
   const json = JSON.stringify(req.body, null, 2);
 
   // Write to Redis (best-effort)
@@ -109,7 +120,11 @@ app.post("/save-history", async (req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+// Start server unless running under tests
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
