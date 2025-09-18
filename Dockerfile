@@ -1,11 +1,24 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm ci --only=production
+
+COPY . .
+
 FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json .
+COPY --from=builder /app/ /app
 
-RUN npm install
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 
-COPY . .
+EXPOSE 3000
 
 CMD ["npm", "start"]
+
+
