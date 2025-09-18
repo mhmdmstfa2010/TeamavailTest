@@ -129,24 +129,23 @@ Steps executed locally:
 
 ```mermaid
 flowchart LR
-  U[User] -->|HTTP 3000| B[Browser (Frontend)]
-  B -->|/history, /save-history| A[Express App (server.js)]
-  A -->|GET/SET key "history"| R[(Redis)]
-  A -->|File fallback| F[/./output/history.json/]
+  User[[User]] -->|HTTP :3000| Browser[Web Browser]
+  Browser -->|Static assets (public/*)| App[Express App (server.js)]
+  Browser -->|API: GET /history, POST /save-history| App
 
-  subgraph Docker Compose
-    A
-    R
-    F
+  App -->|SET/GET key: "history"| Redis[(Redis)]
+  App -->|Fallback read/write| File[/Host: ./output/history.json\nContainer: /app/output/history.json/]
+
+  subgraph Compose Stack
+    App
+    Redis
   end
 
-  subgraph Healthchecks
-    H1[GET /healthz -> 200]
-    H2[redis-cli -a $REDIS_PASSWORD ping -> PONG]
-  end
+  classDef dotted stroke-dasharray: 3 3
+  Health1{{/healthz 200}}:::dotted
+  Health2{{redis-cli -a $REDIS_PASSWORD ping == PONG}}:::dotted
+  Health1 -. monitors .-> App
+  Health2 -. monitors .-> Redis
 
-  H1 -.-> A
-  H2 -.-> R
-
-  note over A,F: Bind mount ./output -> /app/output
+  note over App,File: Bind mount ./output -> /app/output\nPOST writes to Redis and file\nGET prefers Redis, falls back to file
 ```

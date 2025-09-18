@@ -3,6 +3,7 @@ node_modules/
 npm-debug.log*
 package-lock.json
 
+
 # OS
 .DS_Store
 Thumbs.db
@@ -12,4 +13,12 @@ Thumbs.db
 
 # Build / output
 output/
+!output/.gitkeep
 public/*.map
+
+# Jest cache
+.jest/
+
+# Editors/IDEs
+.vscode/
+.idea/
