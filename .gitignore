@@ -1,5 +1,5 @@
 # Node
-node_modules/
+node_modules
 npm-debug.log*
 package-lock.json
 
@@ -22,3 +22,6 @@ public/*.map
 # Editors/IDEs
 .vscode/
 .idea/
+
+terraform/.terraform
+terraform/.terraform.lock.hcl
