@@ -8,6 +8,12 @@ pipeline {
     }
 
     stages {
+        stage('npm install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
         stage('npm format') {
             steps {
                 sh 'npm run format'
