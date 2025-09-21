@@ -70,10 +70,13 @@ pipeline {
             steps {
                 sshagent(['AWS_SSH']) {
                     sh """
+                        
+                        scp -o StrictHostKeyChecking=no docker-compose.yml ec2-user@${env.EC2_IP}:/home/ec2-user/
+                        scp -o StrictHostKeyChecking=no .env ec2-user@${env.EC2_IP}:/home/ec2-user/
                         ssh -o StrictHostKeyChecking=no ec2-user@${env.EC2_IP} '
                             cd /home/ec2-user/
-                            docker pull ${DOCKER_IMAGE}
-                            docker-compose up -d --build
+                            docker pull ${DOCKER_IMAGE} || true
+                            docker compose up -d --build
                         '
                     """
                 }
