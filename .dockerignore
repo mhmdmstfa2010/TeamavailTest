@@ -1,31 +1,28 @@
-# Node dependencies and logs
+# Node.js dependencies
 node_modules
 npm-debug.log
 yarn-error.log
+
+# Logs
 *.log
 
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# Build/test artifacts
-dist
-build
+# Test files and outputs
+test-output
+app.test.js
+*.test.js
 coverage
-.jest
+
+# Local files
+allfiles.txt
 output
+input
+pics
 
-# Git
-.git
-.gitignore
-
-# Docker files
-Dockerfile
+# Docker-related
 docker-compose.yml
 
-# OS / IDE files
-.DS_Store
-Thumbs.db
-.vscode
-.idea
+# Git & configs
+.git
+.gitignore
+Intern_CICD_Project.md
+README.md
