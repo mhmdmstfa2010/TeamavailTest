@@ -74,7 +74,7 @@ pipeline {
 
         stage('Deploy with docker compose') {
             steps {
-                sshagent(['AWS_SSH_FILE']) {
+                sshagent(['AWS_SSH']) {
                     sh '''
                         EC2_IP=$(terraform output -raw public_ip)
                         ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "
