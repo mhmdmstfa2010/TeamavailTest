@@ -40,7 +40,12 @@ pipeline {
 
         stage('docker build') {
             steps {
-                sh 'docker build -t mohamed710/teamavail-app:latest .'
+                sh '''
+                     docker pull mohamed710/teamavail-app:latest || true
+                     docker build \
+                     --cache-from=mohamed710/teamavail-app:latest \
+                     -t mohamed710/teamavail-app:latest .
+                        '''
             }
         }
 
@@ -76,6 +81,7 @@ pipeline {
             steps {
                 sshagent(['AWS_SSH']) {
                     sh '''
+                        cd terraform
                         EC2_IP=$(terraform output -raw public_ip)
                         ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "
                             cd /home/ec2-user/ 
