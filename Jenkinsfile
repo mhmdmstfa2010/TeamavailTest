@@ -61,6 +61,7 @@ pipeline {
         stage('terraform init & apply') {
             steps {
                 sh '''
+                    cd terraform 
                     terraform init
                     terraform apply -auto-approve
                 '''
@@ -73,8 +74,8 @@ pipeline {
                     sh '''
                         EC2_IP=$(terraform output -raw public_ip)
                         ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "
-                            cd /home/ec2-user/ &&
-                            docker pull mohamed710/teamavail-app:latest &&
+                            cd /home/ec2-user/ 
+                            docker pull mohamed710/teamavail-app:latest 
                             docker compose up -d --build
                         "
                     '''
