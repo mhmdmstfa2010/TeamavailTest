@@ -73,7 +73,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ec2-user@${env.EC2_IP} '
                             cd /home/ec2-user/
                             docker pull ${DOCKER_IMAGE}
-                            docker compose up -d --build
+                            docker-compose up -d --build
                         '
                     """
                 }
