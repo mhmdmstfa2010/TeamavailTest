@@ -61,7 +61,7 @@ pipeline {
         stage('terraform init & apply') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
-                  credentialsId: 'AWS_credentials']]) {
+                  credentialsId: 'AWS_Creds']]) {
                 sh '''
                     cd terraform
                     terraform init
@@ -74,7 +74,7 @@ pipeline {
 
         stage('Deploy with docker compose') {
             steps {
-                sshagent(['aws-ssh-key']) {
+                sshagent(['aws-key']) {
                     sh '''
                         EC2_IP=$(terraform output -raw public_ip)
                         ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "
