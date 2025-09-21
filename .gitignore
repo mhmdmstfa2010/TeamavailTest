@@ -23,5 +23,8 @@ public/*.map
 .vscode/
 .idea/
 
-terraform/.terraform
+terraform/.terraform/
 terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfplan
