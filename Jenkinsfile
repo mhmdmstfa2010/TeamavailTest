@@ -57,11 +57,11 @@ pipeline {
             }
         }
 
-        stage('docker push') {
-            steps {
-                sh 'docker push mohamed710/teamavail-app:latest'
-            }
-        }
+        //stage('docker push') {
+         //   steps {
+         //       sh 'docker push mohamed710/teamavail-app:latest'
+         //   }
+        //}
 
         stage('terraform init & apply') {
             steps {
