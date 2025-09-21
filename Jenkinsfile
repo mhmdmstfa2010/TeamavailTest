@@ -54,7 +54,7 @@ pipeline {
 
         stage('docker push') {
             steps {
-                sh 'docker push $DOCKER_USERNAME/teamavail-app:latest'
+                sh 'docker push mohamed710/teamavail-app:latest'
             }
         }
 
@@ -74,6 +74,7 @@ pipeline {
                         EC2_IP=$(terraform output -raw public_ip)
                         ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "
                             cd /home/ec2-user/ &&
+                            docker pull mohamed710/teamavail-app:latest &&
                             docker compose up -d --build
                         "
                     '''
