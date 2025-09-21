@@ -40,7 +40,7 @@ pipeline {
 
         stage('docker build') {
             steps {
-                sh 'docker build -t $DOCKER_USERNAME/teamavail-app:latest .'
+                sh 'docker build -t mohamed710/teamavail-app:latest .'
             }
         }
 
