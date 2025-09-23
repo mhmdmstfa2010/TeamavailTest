@@ -28,15 +28,6 @@ pipeline {
             steps { sh 'npm audit --production' }
         }
 
-        stage('docker build') {
-            steps {
-                sh """
-                    docker pull ${DOCKER_IMAGE} || true
-                    docker build --cache-from=${DOCKER_IMAGE} -t ${DOCKER_IMAGE} .
-                """
-            }
-        }
-
         stage('terraform init & apply') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS_Creds']]) {
