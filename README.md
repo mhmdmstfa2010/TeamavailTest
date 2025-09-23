@@ -74,7 +74,7 @@ docker compose down
 
 ## Running App Screenshot
 
-![Running App](pics/Screenshot%20from%202025-09-18%2016-42-19.png)
+![Running App](pics/local-app.png)
 
 ## Data Persistence
 
