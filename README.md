@@ -145,20 +145,19 @@ Files involved:
 - `terraform/` — EC2 provisioning (S3/DynamoDB backend configured)
 - `docker-compose.yml` — stack definition used remotely on EC2 (pulls image from Docker Hub)
 
-- Jenkins Pipeline UI — end-to-end run of the pipeline.
+Jenkins Pipeline UI — end-to-end run of the pipeline.
 
   ![Jenkins Pipeline](pics/jenkins-pipeline.png)
 
 Accessing the app:
 - After Terraform, Jenkins captures `public_ip` and uses it for SSH. Open `http://EC2_PUBLIC_IP:3000`.
-- AWS Console — provisioned EC2 instance details.
+
+AWS Console — provisioned EC2 instance details.
   
   ![AWS EC2 Console](pics/aws-ec2.png)
 
 
-
-
-- Application UI served from EC2 public IP on port 3000.
+Application UI served from EC2 public IP on port 3000.
  
   ![App on EC2](pics/app-ec2.png)
 
@@ -182,7 +181,8 @@ Accessing the app:
     ngrok http 8080
     ```
     If first time, authenticate once: `ngrok config add-authtoken <YOUR_TOKEN>`
-    - ngrok public tunnel exposing local Jenkins (`localhost:8080`).
+
+ngrok public tunnel exposing local Jenkins (`localhost:8080`).
       ![ngrok Tunnel](pics/ngrok.png)
 
 
