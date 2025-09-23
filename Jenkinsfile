@@ -5,7 +5,6 @@ pipeline {
         REDIS_HOST     = "redis"
         REDIS_PORT     = "6379"
         REDIS_PASSWORD = "${REDIS_PASSWORD}"
-        DOCKER_IMAGE   = "mohamed710/teamavail-app:latest"
     }
 
     stages {
@@ -38,18 +37,6 @@ pipeline {
             }
         }
 
-        stage('docker hub login') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'DockerHub_cred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                }
-            }
-        }
-
-        // stage('docker push') {
-        //     steps { sh "docker push ${DOCKER_IMAGE}" }
-        // }
-
         stage('terraform init & apply') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS_Creds']]) {
@@ -65,6 +52,20 @@ pipeline {
                 }
             }
         }
+        stage('Generate .env') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'REDIS_PASSWORD', variable: 'REDIS_PASSWORD'),
+                ]) {
+                    sh '''
+                        echo "REDIS_HOST=redis" > .env
+                        echo "REDIS_PORT=6379" >> .env
+                        echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> .env
+                        cat .env
+                    '''
+                }
+            }
+        }
 
         stage('Deploy with docker compose') {
             steps {
@@ -72,7 +73,6 @@ pipeline {
                     sh """
                         
                         scp -o StrictHostKeyChecking=no docker-compose.yml ec2-user@${env.EC2_IP}:/home/ec2-user/
-                        scp -o StrictHostKeyChecking=no .env ec2-user@${env.EC2_IP}:/home/ec2-user/
                         ssh -o StrictHostKeyChecking=no ec2-user@${env.EC2_IP} '
                             cd /home/ec2-user/
                             docker pull ${DOCKER_IMAGE} || true
