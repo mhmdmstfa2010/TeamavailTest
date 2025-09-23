@@ -1,9 +1,22 @@
-# Team Availability Tracker - Local CI/CD Pipeline
+# Team Availability Tracker - CI/CD
+
+## Project Phases
+
+- Phase 1: Local CI pipeline using `ci.sh` to build, test, dockerize, and run the stack locally with Docker Compose.
+- Phase 2: Jenkins declarative pipeline that builds, pushes the image, provisions infra with Terraform, and deploys on AWS EC2.
 
 ## Prerequisites
 
 - Docker and Docker Compose (Docker CLI v20+ with `docker compose`)
 - Node.js (optional if you only use Docker)
+- For Phase 2 (Jenkins on AWS):
+  - Jenkins with credentials configured:
+    - `DockerHub_cred` (Username/Password)
+    - `AWS_Creds` (AWS access key credentials)
+    - `AWS_SSH` (SSH key for EC2 via Jenkins SSH Agent)
+    - `REDIS_PASSWORD` (Secret text)
+  - AWS S3 bucket `jenkins-task-terraform-state` and DynamoDB table `jenkins-task-terraform-lock` exist for Terraform backend
+  - An existing EC2 key pair name matching `key_name` in `terraform/terraform.tfvars`
 
 ## Environment
 
@@ -15,7 +28,7 @@ REDIS_PORT=6379
 REDIS_PASSWORD=changeme
 ```
 
-## Run the Pipeline
+## Phase 1: Run Locally with `ci.sh`
 
 ```
 bash ci.sh
@@ -36,7 +49,7 @@ Open http://localhost:3000
 - App: http://localhost:3000
 - Redis: localhost:6379
 
-## Quick Start
+## Quick Start (Local)
 
 ```
 # 1) Create .env (see Environment)
@@ -116,6 +129,38 @@ Steps executed locally:
 - Tests fail due to Redis during local runs:
   - Tests run with `NODE_ENV=test` and don’t require Redis. Re-run with `npm test` inside the project directory.
 
+## Phase 2: Jenkins Pipeline on AWS EC2
+
+Pipeline file: `Jenkinsfile`
+
+High-level stages:
+- npm install, format, lint, test, audit
+- Docker Hub login and push `mohamed710/teamavail-app:latest`
+- Terraform init & apply (provisions a single EC2 in default VPC)
+- Generate `.env` (injects Redis settings)
+- Deploy via SSH to EC2: copy `docker-compose.yml` and `.env`, then `docker-compose up -d`
+- Jenkins Pipeline UI — end-to-end run of the pipeline.
+  ![Jenkins Pipeline](pics/jenkins-pipeline.png)
+
+Accessing the app:
+- After Terraform, Jenkins captures `public_ip` and uses it for SSH. Open `http://EC2_PUBLIC_IP:3000`.
+- AWS Console — provisioned EC2 instance details.
+  ![AWS EC2 Console](pics/aws-ec2.png)
+
+
+Files involved:
+- `Jenkinsfile` — the pipeline logic
+- `terraform/` — EC2 provisioning (S3/DynamoDB backend configured)
+- `docker-compose.yml` — stack definition used remotely on EC2 (pulls image from Docker Hub)
+
+Notes:
+- Ensure Docker Hub image is available as `mohamed710/teamavail-app:latest`.
+- The app runs as a non-root user inside the container; if using a bind mount for `/app/output` on EC2, make sure the host output directory is writable by the container (create `/home/ec2-user/output` and adjust permissions if needed) or switch to a named volume.
+
+- Application UI served from EC2 public IP on port 3000.
+  ![App on EC2](pics/app-ec2.png)
+
+
 ## Implementation Details & Personal Notes
 
 - Redis integration: I added code in `server.js` and `package.json` to connect the app to Redis (using the `redis` client), store history in a Redis key, and keep a file fallback for local persistence.
@@ -124,5 +169,19 @@ Steps executed locally:
 - Security: I use a `.env` file for Redis credentials to avoid hardcoding secrets when hosting code on GitHub.
 - Linting: I wrote the ESLint setup from scratch to enable the linting stage.
 - Images: I used Alpine-based Node images and a multi-stage build to keep the final image lightweight.
+ Jenkins webhook from local instance:
+
+- Problem: When running Jenkins locally on `http://localhost:8080`, GitHub webhooks couldn’t reach my machine. I      wasn’t sure what webhook URL to use.
+  - Solution: Used `ngrok` to expose a secure public URL to my local Jenkins. This provided a stable public HTTPS endpoint that I configured in the GitHub webhook settings, which then forwarded traffic to `http://localhost:8080`.
+  - Tool brief: `ngrok` creates secure tunnels from a public URL to a local service. It’s handy for testing webhooks and third-party integrations against local environments.
+  - Docs: `https://ngrok.com/docs`
+  - Command used:
+    ```bash
+    ngrok http 8080
+    ```
+    If first time, authenticate once: `ngrok config add-authtoken <YOUR_TOKEN>`
+    - ngrok public tunnel exposing local Jenkins (`localhost:8080`).
+      ![ngrok Tunnel](pics/ngrok.png)
+
 
 

@@ -36,6 +36,9 @@ pipeline {
             }
         }
 
+        stage('docker build') {
+            steps { sh "docker build -t mohamed710/teamavail-app:latest ." }
+        }
 
         stage('docker push') {
             steps { sh "docker push mohamed710/teamavail-app:latest" }
