@@ -12,7 +12,7 @@ Thumbs.db
 .env
 
 # Build / output
-output/
+
 !output/.gitkeep
 public/*.map
 
