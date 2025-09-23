@@ -139,6 +139,7 @@ High-level stages:
 - Terraform init & apply (provisions a single EC2 in default VPC)
 - Generate `.env` (injects Redis settings)
 - Deploy via SSH to EC2: copy `docker-compose.yml` and `.env`, then `docker-compose up -d`
+
 Files involved:
 - `Jenkinsfile` — the pipeline logic
 - `terraform/` — EC2 provisioning (S3/DynamoDB backend configured)
