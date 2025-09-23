@@ -16,9 +16,7 @@ services:
       - teamavail-network
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mohamed710/teamavail-app:latest  
     ports:
       - 3000:3000
     restart: always

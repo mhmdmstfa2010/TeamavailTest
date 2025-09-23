@@ -28,6 +28,19 @@ pipeline {
             steps { sh 'npm audit --production' }
         }
 
+        stage('docker hub login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DockerHub_cred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                }
+            }
+        }
+
+
+        stage('docker push') {
+            steps { sh "docker push mohamed710/teamavail-app:latest" }
+        }
+
         stage('terraform init & apply') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS_Creds']]) {
@@ -64,7 +77,6 @@ pipeline {
                     sh """
                         
                         scp -o StrictHostKeyChecking=no docker-compose.yml ec2-user@${env.EC2_IP}:/home/ec2-user/
-                        scp -o StrictHostKeyChecking=no Dockerfile ec2-user@${env.EC2_IP}:/home/ec2-user/
                         scp -o StrictHostKeyChecking=no .env ec2-user@${env.EC2_IP}:/home/ec2-user/
                         ssh -o StrictHostKeyChecking=no ec2-user@${env.EC2_IP} '
                             cd /home/ec2-user/
