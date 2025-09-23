@@ -14,9 +14,10 @@ services:
       start_period: 10s
     networks:
       - teamavail-network
+    
 
   app:
-    image: mohamed710/teamavail-app:latest  
+    image: mohamed710/teamavail-app:latest
     ports:
       - 3000:3000
     restart: always
@@ -24,13 +25,13 @@ services:
       redis:
         condition: service_healthy
     environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD="${REDIS_PASSWORD}"
     networks:
       - teamavail-network
     volumes:
-      - ./output:/app/output
+      - app_output:/app/output
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
       interval: 30s
@@ -44,4 +45,6 @@ networks:
 
 volumes:
   redis_data:
+    driver: local
+  app_output:
     driver: local

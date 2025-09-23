@@ -14,8 +14,7 @@ coverage
 
 # Local files
 allfiles.txt
-output
-input
+
 pics
 
 # Docker-related
