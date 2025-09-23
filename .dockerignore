@@ -26,3 +26,9 @@ docker-compose.yml
 .gitignore
 Intern_CICD_Project.md
 README.md
+
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfplan
