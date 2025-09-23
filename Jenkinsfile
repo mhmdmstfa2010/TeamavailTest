@@ -65,6 +65,7 @@ pipeline {
                         
                         scp -o StrictHostKeyChecking=no docker-compose.yml ec2-user@${env.EC2_IP}:/home/ec2-user/
                         scp -o StrictHostKeyChecking=no Dockerfile ec2-user@${env.EC2_IP}:/home/ec2-user/
+                        scp -o StrictHostKeyChecking=no .env ec2-user@${env.EC2_IP}:/home/ec2-user/
                         ssh -o StrictHostKeyChecking=no ec2-user@${env.EC2_IP} '
                             cd /home/ec2-user/
                             docker-compose up -d --build
