@@ -139,25 +139,26 @@ High-level stages:
 - Terraform init & apply (provisions a single EC2 in default VPC)
 - Generate `.env` (injects Redis settings)
 - Deploy via SSH to EC2: copy `docker-compose.yml` and `.env`, then `docker-compose up -d`
-- Jenkins Pipeline UI — end-to-end run of the pipeline.
-  ![Jenkins Pipeline](pics/jenkins-pipeline.png)
-
-Accessing the app:
-- After Terraform, Jenkins captures `public_ip` and uses it for SSH. Open `http://EC2_PUBLIC_IP:3000`.
-- AWS Console — provisioned EC2 instance details.
-  ![AWS EC2 Console](pics/aws-ec2.png)
-
-
 Files involved:
 - `Jenkinsfile` — the pipeline logic
 - `terraform/` — EC2 provisioning (S3/DynamoDB backend configured)
 - `docker-compose.yml` — stack definition used remotely on EC2 (pulls image from Docker Hub)
 
-Notes:
-- Ensure Docker Hub image is available as `mohamed710/teamavail-app:latest`.
-- The app runs as a non-root user inside the container; if using a bind mount for `/app/output` on EC2, make sure the host output directory is writable by the container (create `/home/ec2-user/output` and adjust permissions if needed) or switch to a named volume.
+- Jenkins Pipeline UI — end-to-end run of the pipeline.
+
+  ![Jenkins Pipeline](pics/jenkins-pipeline.png)
+
+Accessing the app:
+- After Terraform, Jenkins captures `public_ip` and uses it for SSH. Open `http://EC2_PUBLIC_IP:3000`.
+- AWS Console — provisioned EC2 instance details.
+  
+  ![AWS EC2 Console](pics/aws-ec2.png)
+
+
+
 
 - Application UI served from EC2 public IP on port 3000.
+ 
   ![App on EC2](pics/app-ec2.png)
 
 
